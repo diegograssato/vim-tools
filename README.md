@@ -1,0 +1,1 @@
+Script simples para instalação do gerenciador de plugins Pathogen e alguns plugins
