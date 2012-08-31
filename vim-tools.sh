@@ -50,7 +50,6 @@ if [  -d ~/.vim/bundle ];then
   git clone git://github.com/gregsexton/gitv.git
   git clone git://github.com/vim-scripts/L9.git 
   git clone git://github.com/scrooloose/nerdcommenter.git 
-  git clone git://github.com/msanders/snipmate.vim.git 
   git clone git://github.com/vim-scripts/taglist.vim.git 
   git clone git://github.com/vim-scripts/VimClojure.git 
   git clone git://github.com/taq/vim-refact.git 
