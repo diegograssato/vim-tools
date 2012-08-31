@@ -1,4 +1,7 @@
 #!/bin/bash
+# Diego Pereira Grassato
+# Data: 31/08/2012
+#
 clear
 echo "Instalação do gerenciador de plugins Pathogen e de alguns plugins"
 echo "Removendo Lixo"
@@ -55,9 +58,11 @@ if [  -d ~/.vim/bundle ];then
   git clone git://github.com/taq/vim-refact.git 
   git clone git://github.com/tpope/vim-ragtag.git 
   git clone git://github.com/mattn/zencoding-vim.git 
+  git clone git://github.com/taq/traquitana.git 
     
 fi
 clear
+echo
 echo "Baixando o atualizador de plugins by Taq"
 cd ~/
 git clone git://github.com/taq/vim-bundles-updater.git 
