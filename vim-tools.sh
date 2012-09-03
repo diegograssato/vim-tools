@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 # Diego Pereira Grassato
 # Data: 31/08/2012
 #
@@ -8,44 +8,87 @@ echo
 echo "	Instalação do gerenciador de plugins Pathogen e de alguns plugins"
 echo
 echo "=================================================================================" 
-echo; echo "Removendo Lixo ..."
-if [ -d ~/.vim/plugin ];then
-  rm -rf ~/.vim/plugin
+##### Definicoes de variaveis ######
+BUNDLE="$HOME/.vim/bundle"
+PLUGIN="$HOME/.vim/plugin"
+DOC="$HOME/.vim/doc"
+LOAD="$HOME/.vim/autoload"
+VIMRC="$HOME/.vimrc"
+####################################
+
+
+if [ -d $PLUGIN ];then
+  echo; echo "Removendo Lixo ..."
+  rm -rf $PLUGIN
+fi
+if [ -d $DOC ];then
+  rm -rf $DOC
+  echo "..................................................[ OK ]" 
 fi
 
-if [ -d ~/.vim/doc ];then
-  rm -rf ~/.vim/doc
-fi
-echo "..................................................[ OK ]" 
-echo "Criando ambiente..."
-if [ ! -d ~/.vim/autoload ];then
-  mkdir -p  ~/.vim/autoload
+
+if [ ! -d $LOAD ];then
+  echo "Criando ambiente..."
+  mkdir -p  $LOAD
   echo "Baixando pathogen...."
-  curl -so ~/.vim/autoload/pathogen.vim  https://raw.github.com/tpope/vim-pathogen/master/autoload/pathogen.vim
+  curl -so $LOAD/pathogen.vim  https://raw.github.com/tpope/vim-pathogen/master/autoload/pathogen.vim
 echo "..................................................[ OK ]"
 fi
-echo "Criando diretorio dos plugins ~/.vim/bundle ..."
-if [ ! -d ~/.vim/bundle ];then
-  mkdir -p ~/.vim/bundle
-fi
-echo "..................................................[ OK ]"
-echo "Fazendo backup do ~/.vimrc ..."
-if [ -f ~/.vimrc ];then
-  mv ~/.vimrc ~/.vimrc.old
-  echo "Ativando Pathogen  ~/.vimrc ..."
-  echo "call pathogen#infect()
-  syntax on
-  filetype plugin indent on" > ~/.vimrc
+
+if [ ! -d $BUNDLE ];then
+  echo "Criando diretorio dos plugins $BUNDLE ..."
+  mkdir -p $BUNDLE
   echo "..................................................[ OK ]"
 fi
 
+if [ -f $VIMRC ];then
+  PATHOGEN=$(cat $VIMRC | egrep '[^(^$)]' | egrep '[a-z0-9]+'  | egrep -i "call pathogen#infect()"  | wc -l)
+  SYNTAX=$(cat $VIMRC | egrep '[^(^$)]' | egrep '[a-z0-9]+'  | egrep -i "syntax on"  | wc -l)
+  FILETYPE=$(cat $VIMRC | egrep '[^(^$)]' | egrep '[a-z0-9]+'  | egrep -i "filetype plugin indent on"  | wc -l)
+  if [ $PATHOGEN -eq 0 ] && [ $SYNTAX -eq 0 ] && [ $FILETYPE -eq 0 ] ;then
+    echo "Fazendo backup do $VIMRC ..."
+    mv $VIMRC $VIMRC.old
+    echo "Ativando Pathogen $VIMRC ..."
+    echo "call pathogen#infect()
+syntax on
+filetype plugin indent on" > $VIMRC
+  elif [ $PATHOGEN -eq 0 ] && [ $FILETYPE -eq 0 ] ;then
+    echo "Fazendo backup do $VIMRC ..."
+    mv $VIMRC $VIMRC.old
+    echo "Ativando Pathogen $VIMRC ..."
+    echo "call pathogen#infect()
+syntax on
+filetype plugin indent on" > $VIMRC
+  fi
+  PATHOGEN=$(cat $VIMRC | egrep '[^(^$)]' | egrep '[a-z0-9]+'  | egrep -i "call pathogen#infect()"  | wc -l)
+  SYNTAX=$(cat $VIMRC | egrep '[^(^$)]' | egrep '[a-z0-9]+'  | egrep -i "syntax on"  | wc -l)
+  FILETYPE=$(cat $VIMRC | egrep '[^(^$)]' | egrep '[a-z0-9]+'  | egrep -i "filetype plugin indent on"  | wc -l)
+  if [ $PATHOGEN -eq 1 ];then
+    echo "PATHOGEN configurado"
+  else
+    echo "call pathogen#infect()" >> $VIMRC
+    echo "PATHOGEN configurado"
+  fi
+  
+  if [ $SYNTAX -eq 1 ];then
+    echo "Syntax on configurado"
+  else
+    echo "syntax on" >> $VIMRC
+    echo "Syntax on configurado"
+  fi
+  
+  if [ $FILETYPE -eq 1 ];then
+    echo "Filetype plugin indent on configurado "
+  else
+    echo "filetype plugin indent on" >> $VIMRC
+    echo "Filetype plugin indent on configurado "
+  fi
+fi
+exit
 
-
-
-echo "Baixando alguns Plugins Uteis em ~/.vim/bundle ...."
-
-if [  -d ~/.vim/bundle ];then
-    cd ~/.vim/bundle
+if [  -d $BUNDLE ];then
+     echo "Baixando alguns Plugins Uteis em $BUNDLE ...."
+    cd $BUNDLE
     if [ -d vim-rails ];then
       echo " * Ja possui vim-rails"
     else
@@ -243,15 +286,29 @@ fi
 echo
 cd ~/
 if [ ! -d vim-bundles-updater ];then
-  echo
-  echo "Baixando o atualizador de plugins by Taq ..."
-  
-  git clone git://github.com/taq/vim-bundles-updater.git 
-  chmod +x vim-bundles-updater/update_vim_bundles
-  cp vim-bundles-updater/update_vim_bundles /usr/sbin/ 
-  echo " * Script instalado, execute o comando update_vim_bundles para atualizar os seus plugins"
+    echo
+    echo "Baixando o atualizador de plugins by Taq ..."
+    git clone git://github.com/taq/vim-bundles-updater.git 
+    if [ -d vim-bundles-updater ]; then
+      chmod +x vim-bundles-updater/update_vim_bundles
+      cp vim-bundles-updater/update_vim_bundles /usr/sbin/ 
+      echo " * Script instalado, execute o comando update_vim_bundles para atualizar os seus plugins"
+    else
+      echo " * Falha ao efetuar o download, verifique sua conectividade"
+    fi
  else
-  echo " * Script ja esta instalado, execute o comando update_vim_bundles para atualizar os seus plugins"
+    cd ~/
+    if [ -f /usr/sbin/update_vim_bundles ]; then
+	echo " * Script ja esta instalado, execute o comando update_vim_bundles para atualizar os seus plugins"
+    else
+      if [ -d vim-bundles-updater ]; then
+	chmod +x vim-bundles-updater/update_vim_bundles
+	cp vim-bundles-updater/update_vim_bundles /usr/sbin/ 
+	echo " * Script instalado, execute o comando update_vim_bundles para atualizar os seus plugins"
+      else
+	echo " * Falha ao efetuar o download, verifique sua conectividade"
+      fi
+    fi
 fi
  
 echo 
