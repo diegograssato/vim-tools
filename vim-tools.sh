@@ -84,7 +84,7 @@ filetype plugin indent on" > $VIMRC
     echo "Filetype plugin indent on configurado "
   fi
 fi
-exit
+
 
 if [  -d $BUNDLE ];then
      echo "Baixando alguns Plugins Uteis em $BUNDLE ...."
